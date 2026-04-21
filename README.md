@@ -245,12 +245,21 @@ For production use, you should create a dedicated database user with minimal pri
 
 ### Steps
 
-1. **Clone the repository**
-2. **Install `uv`** (if not already):
+1. **Install `uv`** (if not already):
    ```bash
    pip install uv
    ```
-3. **Install dependencies**
+2. **Install from PyPI (recommended)**
+   ```bash
+   uv tool install mariadb-mcp
+   ```
+   Or run it without installing:
+   ```bash
+   uvx mariadb-mcp
+   ```
+3. **Alternative: local development from source**
+   - Clone the repository
+   - Install dependencies
    ```bash
    uv lock
    uv sync
@@ -260,17 +269,22 @@ For production use, you should create a dedicated database user with minimal pri
    
    **Standard Input/Output (default):**
    ```bash
-   uv run server.py
+   mariadb-mcp
    ```
    
    **SSE Transport:**
    ```bash
-   uv run server.py --transport sse --host 127.0.0.1 --port 9001
+   mariadb-mcp --transport sse --host 127.0.0.1 --port 9001
    ```
    
    **HTTP Transport (streamable HTTP):**
    ```bash
-   uv run server.py --transport http --host 127.0.0.1 --port 9001 --path /mcp
+   mariadb-mcp --transport http --host 127.0.0.1 --port 9001 --path /mcp
+   ```
+
+   **Local source checkout (without installation):**
+   ```bash
+   uv run server.py
    ```
 
 ---
@@ -340,12 +354,9 @@ For production use, you should create a dedicated database user with minimal pri
 {
   "mcpServers": {
     "MariaDB_Server": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "--directory",
-        "path/to/mariadb-mcp-server/",
-        "run",
-        "server.py"
+        "mariadb-mcp"
         ],
         "envFile": "path/to/mcp-server-mariadb-vector/.env"      
     }
@@ -429,3 +440,35 @@ For production use, you should create a dedicated database user with minimal pri
 - Tests are located in the `src/tests/` directory.
 - See `src/tests/README.md` for an overview.
 - Tests cover both standard SQL and vector/embedding tool operations.
+
+---
+
+## Publishing to PyPI (Trusted Publisher / OIDC)
+
+This repository includes a GitHub Actions workflow at `.github/workflows/publish-pypi.yml` that publishes with OpenID Connect (OIDC) using `pypa/gh-action-pypi-publish`.
+
+### Debug release first (TestPyPI)
+
+Create a **pre-release** on GitHub to publish a debug build to TestPyPI.
+
+When creating the **TestPyPI** Trusted Publisher, use:
+
+- **PyPI Project Name:** `mariadb-mcp`
+- **Owner:** `VIEWVIEWVIEW`
+- **Repository name:** `mariadb-mcp`
+- **Workflow name:** `publish-pypi.yml`
+- **Environment name (optional but recommended):** `testpypi`
+
+### Stable release (PyPI)
+
+When creating the **PyPI** Trusted Publisher, use the same values but set the environment to `pypi`:
+
+- **PyPI Project Name:** `mariadb-mcp`
+- **Owner:** `VIEWVIEWVIEW`
+- **Repository name:** `mariadb-mcp`
+- **Workflow name:** `publish-pypi.yml`
+- **Environment name (optional but recommended):** `pypi`
+
+The workflow builds both wheel and source distributions, then:
+- Publishes to **TestPyPI** for pre-releases (or manual dispatch).
+- Publishes to **PyPI** for non-pre-release releases.
