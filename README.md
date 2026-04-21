@@ -240,52 +240,46 @@ For production use, you should create a dedicated database user with minimal pri
 ### Requirements
 
 - **Python 3.11** (see `.python-version`)
-- **uv** (dependency manager; [install instructions](https://github.com/astral-sh/uv))
+- **uv** (dependency manager)
 - MariaDB server (local or remote)
 
-### Steps
+### Install `uv`
 
-1. **Install `uv`** (if not already):
-   ```bash
-   pip install uv
-   ```
-2. **Install from PyPI (recommended)**
-   ```bash
-   uv tool install mariadb-mcp
-   ```
-   Or run it without installing:
-   ```bash
-   uvx mariadb-mcp
-   ```
-3. **Alternative: local development from source**
-   - Clone the repository
-   - Install dependencies
-   ```bash
-   uv lock
-   uv sync
-   ```
-4. **Create `.env`** in the project root (see [Configuration](#configuration--environment-variables))
-5. **Run the server**
-   
-   **Standard Input/Output (default):**
-   ```bash
-   mariadb-mcp
-   ```
-   
-   **SSE Transport:**
-   ```bash
-   mariadb-mcp --transport sse --host 127.0.0.1 --port 9001
-   ```
-   
-   **HTTP Transport (streamable HTTP):**
-   ```bash
-   mariadb-mcp --transport http --host 127.0.0.1 --port 9001 --path /mcp
-   ```
+```bash
+pip install uv
+```
 
-   **Local source checkout (without installation):**
-   ```bash
-   uv run server.py
-   ```
+### Quick Start (recommended)
+
+```bash
+uvx mariadb-mcp
+```
+
+### Run from a local checkout (development)
+
+```bash
+# from your local checkout
+# cd /path/to/mariadb-mcp
+# configure environment variables (see Configuration section above)
+uv lock
+uv sync
+uv run mariadb-mcp
+```
+
+### Codex MCP setup example
+
+```bash
+codex mcp add mariadb-mcp --env DB_HOST=localhost --env DB_PORT=3306 --env DB_USER=root --env DB_PASSWORD=1234 --env DB_NAME=myprojecttestdatabase --env MCP_READ_ONLY=true -- uvx mariadb-mcp
+```
+
+Example Codex config:
+
+```toml
+[mcp_servers.mariadb-mcp]
+command = "uvx"
+args = ["mariadb-mcp"]
+env = { DB_HOST = "localhost", DB_PORT = "3306", DB_USER = "root", DB_PASSWORD = "1234", DB_NAME = "mytestdb", MCP_READ_ONLY = "true" }
+```
 
 ---
 
@@ -353,7 +347,7 @@ For production use, you should create a dedicated database user with minimal pri
 ```json
 {
   "mcpServers": {
-    "MariaDB_Server": {
+    "mariadb-mcp": {
       "command": "uvx",
       "args": [
         "mariadb-mcp"
@@ -472,3 +466,18 @@ When creating the **PyPI** Trusted Publisher, use the same values but set the en
 The workflow builds both wheel and source distributions, then:
 - Publishes to **TestPyPI** for pre-releases (or manual dispatch).
 - Publishes to **PyPI** for non-pre-release releases.
+
+## TestPyPI debug install for Codex
+
+```bash
+codex mcp add mariadb-mcp --env DB_HOST=localhost --env DB_PORT=3306 --env DB_USER=root --env DB_PASSWORD=1234 --env DB_NAME=mytestdb --env MCP_READ_ONLY=true -- uvx --index https://test.pypi.org/simple/ --index https://pypi.org/simple/ --index-strategy unsafe-best-match mariadb-mcp
+```
+
+Example Codex config for debug (`codex mcp add` adds servers globally, not just in local `.codex/config.toml`):
+
+```toml
+[mcp_servers.mariadb-mcp]
+command = "uvx"
+args = ["--index", "https://test.pypi.org/simple/", "--index", "https://pypi.org/simple/", "--index-strategy", "unsafe-best-match", "mariadb-mcp"]
+env = { DB_HOST = "localhost", DB_PORT = "3306", DB_USER = "root", DB_PASSWORD = "1234", DB_NAME = "pr0gramm", MCP_READ_ONLY = "true" }
+```
