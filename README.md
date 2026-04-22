@@ -249,24 +249,7 @@ For production use, you should create a dedicated database user with minimal pri
 pip install uv
 ```
 
-### Quick Start (recommended)
-
-```bash
-uvx mariadb-mcp
-```
-
-### Run from a local checkout (development)
-
-```bash
-# from your local checkout
-# cd /path/to/mariadb-mcp
-# configure environment variables (see Configuration section above)
-uv lock
-uv sync
-uv run mariadb-mcp
-```
-
-### Codex MCP setup example
+### Add MCP to your agent CLI, e.g. Codex
 
 ```bash
 codex mcp add mariadb-mcp --env DB_HOST=localhost --env DB_PORT=3306 --env DB_USER=root --env DB_PASSWORD=1234 --env DB_NAME=myprojecttestdatabase --env MCP_READ_ONLY=true -- uvx mariadb-mcp
@@ -279,6 +262,18 @@ Example Codex config:
 command = "uvx"
 args = ["mariadb-mcp"]
 env = { DB_HOST = "localhost", DB_PORT = "3306", DB_USER = "root", DB_PASSWORD = "1234", DB_NAME = "mytestdb", MCP_READ_ONLY = "true" }
+```
+
+
+### Run from a local checkout (development)
+
+```bash
+# git clone this repo
+# cd /path/to/mariadb-mcp
+# configure environment variables (see Configuration section above)
+uv lock
+uv sync
+uv run mariadb-mcp
 ```
 
 ---
