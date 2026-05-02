@@ -240,15 +240,9 @@ For production use, you should create a dedicated database user with minimal pri
 ### Requirements
 
 - **Python 3.11** (see `.python-version`)
-- **uv** (dependency manager)
+- **uv** (dependency manager; [install instructions](https://github.com/astral-sh/uv))
 - MariaDB server (local or remote)
 
-
-### Install `uv`
-
-```bash
-pip install uv
-```
 
 ### Add MCP to your agent CLI, e.g. Codex
 
